@@ -576,8 +576,7 @@ __constant float3 vertices[] = {
     __constant float BOUNCE_DAMPING = 0.3f;
     __constant float FLOOR_Y = 0.0f;
       __constant float FADE_START = 0.5f;
-     float INTERACTION_RADIUS = 2.0f;  
-     float INTERACTION_STRENGTH = 3.0f; 
+
      __constant int NUM_VERTICES =  228;
 
     float rand_float(int seed, float time) 
@@ -620,7 +619,8 @@ __constant float3 vertices[] = {
         int gid = get_global_id(0);
         int index6 = gid * 7;
         int index3 = gid * 3;
-
+             float INTERACTION_RADIUS = 2.0f;  
+     float INTERACTION_STRENGTH = 3.0f; 
         float3 pos = (float3)(points[index6 + 0], points[index6 + 1], points[index6 + 2]);
         float3 vel = (float3)(velocity[index3 + 0], velocity[index3 + 1], velocity[index3 + 2]);
         
@@ -807,13 +807,29 @@ __constant float3 vertices[] = {
     }
 )";
 
-int main()
+int main(int argc, char** argv)
 {
     if (!glfwInit())
     {
         printf("Falha ao inicializar GLFW\n");
         return -1;
     }
+
+    int NUM_POINTS = 1000;  
+        //int one_million = 1000 * 1000; // 1.000.000
+    const int three_million = 1000 * 1000 * 3;
+
+
+
+    if (argc > 1)
+    {
+        NUM_POINTS = atoi(argv[1]);
+        if (NUM_POINTS > three_million)
+        {
+            NUM_POINTS = three_million;
+        }
+    }
+
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "Points Demo", NULL, NULL);
     if (!window)
@@ -862,10 +878,8 @@ int main()
     // glfwSetMouseButtonCallback(window, mouse_callback);
     Shader shader(vertex_shader_source, fragment_shader_source);
 
-    int one_million = 1000 * 1000; // 1.000.000
-    // int three_million = 1000 * 1000 * 3;
 
-    const int NUM_POINTS = one_million;
+  
 
 
     MeshBuffer mesh(true);
